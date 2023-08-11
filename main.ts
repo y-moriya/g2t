@@ -1,6 +1,7 @@
 import { Hono } from "https://deno.land/x/hono@v3.3.1/mod.ts";
 import { serve } from "https://deno.land/std@0.167.0/http/server.ts";
-import { datetime } from "https://deno.land/x/ptera@v1.0.2/mod.ts";
+import { datetime, diffInMin } from "https://deno.land/x/ptera@v1.0.2/mod.ts";
+import "https://deno.land/x/dotenv@v3.2.2/load.ts";
 
 const app = new Hono();
 
@@ -15,7 +16,7 @@ app.post("/" + Deno.env.get("UUID"), async (c) => {
     return c.json({ statusCode });
   }
 
-  const response = await createTask(title, starts, convertEnds(ends));
+  const response = await createTask(title, starts, ends);
   console.log(response);
 
   if (response && response.ok) {
@@ -36,16 +37,28 @@ export function convertEnds(ends: string) {
   return date.format("YYYY-MM-dd HH:mm まで");
 }
 
+export function calculateDuration(starts: string, ends: string) {
+  const startsStr = starts.replace(/,/, "").replace(/ at /, " ").trim();
+  const endsStr = ends.replace(/,/, "").replace(/ at /, " ").trim();
+  const startsDate = datetime().parse(startsStr, "MMMM dd YYYY hh:mma");
+  const endsDate = datetime().parse(endsStr, "MMMM dd YYYY hh:mma");
+  const duration = diffInMin(endsDate, startsDate);
+  return duration;
+}
+
 // function to create task request to todoist api
 async function createTask(title: string, starts: string, ends: string) {
   const url = "https://api.todoist.com/rest/v2/tasks";
   const token = Deno.env.get("TODOIST_TOKEN");
   const project_id = Deno.env.get("PROJECT_ID");
+  const duration = calculateDuration(starts, ends);
+  const durationUnit = "minute";
   const data = {
     content: title,
     due_string: starts,
-    description: ends,
     project_id: project_id,
+    duration: duration,
+    duration_unit: durationUnit,
   };
   const headers = {
     "Content-Type": "application/json",
