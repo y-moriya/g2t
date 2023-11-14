@@ -10,15 +10,22 @@ Deno.test("convertEnds", () => {
 });
 
 Deno.test("convertEnds2", () => {
-  const ends = " September 8, 2023 at 11:00PM";
-  const expected = "2023-09-08 23:00 まで";
+  const ends = "September 8, 2023 at 02:30PM";
+  const expected = "2023-09-08 14:30 まで";
   const actual = convertEnds(ends);
   assertEquals(actual, expected);
 });
 
 Deno.test("convertEnds3", () => {
-  const ends = " September 8, 2023 at 12:00AM";
+  const ends = "September 8, 2023 at 12:00PM";
   const expected = "2023-09-08 12:00 まで";
+  const actual = convertEnds(ends);
+  assertEquals(actual, expected);
+});
+
+Deno.test("convertEnds4", () => {
+  const ends = "November 24, 2023 at 12:30PM";
+  const expected = "2023-11-24 12:30 まで";
   const actual = convertEnds(ends);
   assertEquals(actual, expected);
 });
