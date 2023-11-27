@@ -30,6 +30,13 @@ Deno.test("convertEnds4", () => {
   assertEquals(actual, expected);
 });
 
+Deno.test("convertEnds5", () => {
+  const ends = "December 7, 2023 at 12:30PM";
+  const expected = "2023-12-07 12:30 まで";
+  const actual = convertEnds(ends);
+  assertEquals(actual, expected);
+});
+
 Deno.test("calculateDuration function", () => {
   const testData = [
     {
@@ -46,6 +53,11 @@ Deno.test("calculateDuration function", () => {
       starts: "February 20, 2023 at 05:00AM",
       ends: "February 20, 2023 at 06:30AM",
       expected: 90,
+    },
+    {
+      starts: "December 7, 2023 at 09:00AM",
+      ends: "December 7, 2023 at 12:30PM",
+      expected: 210,
     },
   ];
 
