@@ -32,22 +32,23 @@ serve(app.fetch);
 // ex. from: July 24, 2023 at 01:00PM to: `July 24 2023 01:00PM`, and
 // to: 2023-07-24 13:00:00
 export function convertEnds(ends: string) {
-  const str = ends.replace(/,/, "").replace(/ at /, " ").replace("12:", "00:")
-    .trim();
+  const str = fixDate(ends);
   const date = datetime().parse(str, "MMMM dd YYYY hh:mma");
   return date.format("YYYY-MM-dd HH:mm まで");
 }
 
 export function calculateDuration(starts: string, ends: string) {
-  const startsStr = starts.replace(/,/, "").replace(/ at /, " ").trim();
-  const endsStr = ends.replace(/,/, "").replace(/ at /, " ").replace(
-    "12:",
-    "00:",
-  ).trim();
+  const startsStr = fixDate(starts);
+  const endsStr = fixDate(ends);
   const startsDate = datetime().parse(startsStr, "MMMM dd YYYY hh:mma");
   const endsDate = datetime().parse(endsStr, "MMMM dd YYYY hh:mma");
   const duration = diffInMin(endsDate, startsDate);
   return duration;
+}
+
+export function fixDate(date: string) {
+  return date.replace(/,/, "").replace(/ at /, " ").replace("12:", "00:")
+  .trim();
 }
 
 // function to create task request to todoist api
